@@ -1,4 +1,4 @@
-# Bajirao Mastani: Multi-Stage Vision-Language Captioning Pipeline
+# EE6180 Advanced Topics in Artificial Intelligence - Image Captioning Project on Movie Frames
 
 This repository contains a complete pipeline for generating descriptive captions from still frames of the movie *Bajirao Mastani*. The project includes object-aware captioning using models like LLaMA 3.2, Qwen 2.5, and Grounded Segment Anything + Grounding DINO.
 
