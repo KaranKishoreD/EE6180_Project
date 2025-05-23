@@ -9,7 +9,7 @@ This repository contains a complete pipeline for generating descriptive captions
 Download and organize the dataset by running:
 
 ```bash
-python get_dataset.py
+python ./BajiraoMastani/BajiraoMastani/get_dataset.py
 ```
 
 This script processes the movie and stores frame metadata in the `BajiraoMastani/` directory including:
@@ -33,23 +33,28 @@ pip install -r llama_inf_reqs.txt
 
 ### Run LLaMA captioning:
 
+Make sure you create a `.env` file contains your `HUGGINGFACE_TOKEN`.
+
 * Basic captioning:
 
   ```bash
-  python llama_inference.py
+  export HUGGINGFACE_TOKEN=$(grep HUGGINGFACE_TOKEN .env | cut -d '=' -f2)
+  python LLaMa_inference.py --hf_token $HUGGINGFACE_TOKEN --input_path INPUT_FOLDER_PATH (./input_images/data_subset) --output_path OUTPUT_FOLDER_PATH --num_gpus NUMBER_OF_GPUS
   ```
 
 * Captioning with GSAM descriptors:
 
+
+
   ```bash
-  python llama_inference_GSAM.py
+  python llama_inference_GSAM.py --hf_token $HUGGINGFACE_TOKEN --input_path INPUT_FOLDER_PATH (./input_images/data_subset) --output_path OUTPUT_FOLDER_PATH --num_gpus NUMBER_OF_GPUS --descriptor_path PATH_TO_TSV/CSV_FILE_FOR_OBJECT_BOUNDING_BOX
   ```
 
 ---
 
 ## 3. Captioning with Qwen 2.5
 
-Qwen 2.5 is another vision-language model used for captioning frames.
+Qwen 2.5 Omni is another vision-language model used for getting image captions.
 
 ### Environment Setup:
 
@@ -59,12 +64,11 @@ conda activate qwen
 pip install -r qwen_reqs.txt
 ```
 
-Make sure your `.env` file contains your `HUGGINGFACE_TOKEN`.
 
 ### Run Qwen captioning:
 
 ```bash
-python qwen2.5_inference.py --input-dir input_images --output-csv output/output_captions/Qwen2.5_captions.csv
+python qwen2.5_inference.py --input-dir input_images --output-csv output/output_captions/Qwen2.5_captions.csv --gpu gpu_id
 ```
 
 ---
@@ -102,19 +106,15 @@ This generates `batch_descriptors.tsv` containing object descriptions for each i
 
 All final outputs are stored in `output/output_captions/`:
 
-* `LLaMa3.2_Captions.csv`: LLaMA captions without objects
-* `LLaMa3.2_captions_GSAM.csv`: LLaMA with grounded object descriptors
-* `Qwen2.5_captions.csv`: Captions from Qwen model
-* `Ensemble_Captions.tsv`: Optional merged captions
-* `*_contains_objects_cleaned.csv`: Refined GSAM+caption outputs
+* `LLaMa3.2_Captions.csv`: LLaMA captions without getting object boundaries from SAM
+* `LLaMa3.2_captions_GSAM.csv`: LLaMA captions with grounded object descriptors
+* `Qwen2.5_captions.csv`: Captions using Qwen 2.5 model
+* `Ensemble_Captions.tsv`: Merged captions using ensemble of following models: LLaMa + Qwen 2.5 + Phi4 + BLIP 
+* `*_contains_objects_cleaned.csv`: Refined GSAM + caption outputs
 
 Segmentation and object annotations are in:
 
-* `descriptor_outputs/`
-* `output/outputs_SAM_GroundingDINO/`
+* `descriptor_outputs/` : Annotations has rectangular bounding boxes around detected objects, polygon contours are generated using SAM and approximation of those contours is shown in polygon_approximation for the subset of 50 images listed in ./input_images/data_subset
+* `output/outputs_SAM_GroundingDINO/`: Polygon boundaries, annotations, inverted mask and mask for different objects for a single image (illustration purpose)
 
 ---
-
-## Citation
-
-This repository is part of a project to explore character and background consistency in cinematic storytelling.
